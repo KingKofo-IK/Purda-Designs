@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purda Designs LLC — Dress Payment Plan Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6ee;
+      --blush: #e8c9b8;
+      --rose: #c4806a;
+      --deep: #3b2a2a;
+      --muted: #8a6e6e;
+      --accent: #d4a89a;
+      --card-bg: #fff9f5;
+    }
+
+    body {
+      background: var(--cream);
+      font-family: 'Jost', sans-serif;
+      color: var(--deep);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 48px 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: var(--deep);
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: var(--rose);
+      margin: 12px auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--blush);
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 4px 32px rgba(196,128,106,0.08);
+      animation: fadeUp 0.9s ease both;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .currency {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: var(--rose);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 14px 16px 14px 36px;
+      border: 1px solid var(--blush);
+      border-radius: 10px;
+      font-family: 'Jost', sans-serif;
+      font-size: 1.1rem;
+      color: var(--deep);
+      background: white;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus { border-color: var(--rose); }
+
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--blush);
+      border-radius: 10px;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      color: var(--deep);
+      background: white;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4806a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-bottom: 28px;
+    }
+
+    select:focus { border-color: var(--rose); }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--blush);
+      border-radius: 10px;
+      background: white;
+      margin-bottom: 28px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+
+    .toggle-row:hover { border-color: var(--rose); }
+
+    .toggle-row-label {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .toggle-row-label strong {
+      display: block;
+      color: var(--deep);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      background: var(--blush);
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.25s;
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: var(--rose); }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .toggle.on::after { transform: translateX(20px); }
+
+    .fee-row {
+      background: #fff3ee;
+      border-color: var(--accent) !important;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: var(--rose);
+      color: white;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover { background: #b56e5a; }
+    button:active { transform: scale(0.98); }
+
+    .results {
+      margin-top: 36px;
+      display: none;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .results.show { display: block; }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--deep);
+      margin-bottom: 12px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0e4da;
+    }
+
+    .row:last-child { border-bottom: none; }
+
+    .row-label {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .row-label span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .row-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--rose);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #fce8e0, #fdf0e8);
+      border: 1px solid var(--blush);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .highlight-box .hl-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .highlight-box .hl-label strong {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--deep);
+      margin-bottom: 2px;
+    }
+
+    .highlight-box .hl-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--rose);
+    }
+
+    .sep { height: 1px; background: var(--blush); margin: 24px 0; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Purda Designs LLC</h1>
+  <div class="divider"></div>
+  <p>Dress Payment Plan Calculator</p>
+</div>
+
+<div class="card">
+  <label for="amount">Total Dress Price</label>
+  <div class="input-wrap">
+    <span class="currency">$</span>
+    <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" oninput="calculate()"/>
+  </div>
+  <label for="installments-count">Number of Installments (50% split)</label>
+  <select id="installments-count" onchange="calculate()">
+    <option value="2">2 Installments — 25% each</option>
+    <option value="3">3 Installments — ~16.7% each</option>
+    <option value="4" selected>4 Installments — 12.5% each</option>
+    <option value="5">5 Installments — 10% each</option>
+    <option value="6">6 Installments — ~8.3% each</option>
+  </select>
+
+  <div class="toggle-row fee-row" onclick="toggleFee()">
+    <div class="toggle-row-label">
+      <strong>Consultation Fee — $50</strong>
+      Deduct the $50 consultation fee from the total
+    </div>
+    <div class="toggle" id="fee-toggle"></div>
+  </div>
+
+  <button onclick="calculate()">Calculate Payment Plan</button>
+
+  <div class="results" id="results">
+    <div class="sep"></div>
+
+    <!-- Fee deduction note (hidden by default) -->
+    <div class="row" id="fee-note" style="display:none; background:#fff3ee; border-radius:8px; padding: 10px 12px; margin-bottom:4px;">
+      <div class="row-label">Consultation Fee Deducted <span>Adjusted price shown below</span></div>
+      <div class="row-amount" id="fee-deduct" style="color:#a05a45;">−$50.00</div>
+    </div>
+    <div class="row" id="adjusted-row" style="display:none;">
+      <div class="row-label">Adjusted Dress Price</div>
+      <div class="row-amount" id="adjusted-price">$0.00</div>
+    </div>
+
+    <!-- Initial Deposit -->
+    <div class="section-title">Initial Deposit — 25%</div>
+    <div class="row">
+      <div class="row-label">Due at booking</div>
+      <div class="row-amount" id="initial">$0.00</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Installments -->
+    <div class="section-title" id="installments-title">Installments — 50% in 4 parts</div>
+    <div class="row" style="margin-bottom:4px;">
+      <div class="row-label">Total installment amount <span>50% of dress price</span></div>
+      <div class="row-amount" id="middle-total">$0.00</div>
+    </div>
+    <div id="installments"></div>
+
+    <div class="sep"></div>
+
+    <!-- Final Deposit -->
+    <div class="section-title">Final Deposit — 25%</div>
+    <div class="row">
+      <div class="row-label">Due upon completion</div>
+      <div class="row-amount" id="final">$0.00</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- 75% Completion Summary -->
+    <div class="section-title">Completion Summary</div>
+    <div class="highlight-box">
+      <div class="hl-label">
+        <strong>75% Required for Completion</strong>
+        Initial Deposit (25%) + Installments (50%)
+      </div>
+      <div class="hl-amount" id="completion">$0.00</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Total check -->
+    <div class="row">
+      <div class="row-label">
+        Total Amount
+        <span>Should equal full price</span>
+      </div>
+      <div class="row-amount" id="total">$0.00</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let feeActive = false;
+
+  function toggleFee() {
+    feeActive = !feeActive;
+    document.getElementById('fee-toggle').classList.toggle('on', feeActive);
+    calculate();
+  }
+
+  function fmt(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function calculate() {
+    const raw = parseFloat(document.getElementById('amount').value);
+    if (!raw || raw <= 0) { document.getElementById('results').classList.remove('show'); return; }
+
+    const numInstallments = parseInt(document.getElementById('installments-count').value);
+    const price = feeActive ? Math.max(0, raw - 50) : raw;
+
+    const initial      = price * 0.25;
+    const middle       = price * 0.50;
+    const installment  = middle / numInstallments;
+    const finalDep     = price * 0.25;
+    const completion   = initial + middle;
+    const pct          = (50 / numInstallments).toFixed(1).replace(/\.0$/, '');
+
+    document.getElementById('initial').textContent    = fmt(initial);
+    document.getElementById('middle-total').textContent = fmt(middle);
+    document.getElementById('final').textContent      = fmt(finalDep);
+    document.getElementById('completion').textContent = fmt(completion);
+    document.getElementById('total').textContent      = fmt(initial + middle + finalDep);
+    document.getElementById('installments-title').textContent =
+      `Installments — 50% in ${numInstallments} parts`;
+
+    // Show fee deduction row if active
+    const feeNote = document.getElementById('fee-note');
+    if (feeActive) {
+      feeNote.style.display = 'flex';
+      document.getElementById('fee-deduct').textContent = '−$50.00';
+      document.getElementById('adjusted-price').textContent = fmt(price);
+      document.getElementById('adjusted-row').style.display = 'flex';
+    } else {
+      feeNote.style.display = 'none';
+      document.getElementById('adjusted-row').style.display = 'none';
+    }
+
+    const container = document.getElementById('installments');
+    container.innerHTML = '';
+    for (let i = 1; i <= numInstallments; i++) {
+      container.innerHTML += `
+        <div class="row">
+          <div class="row-label">Installment ${i} of ${numInstallments} <span>${pct}% of total</span></div>
+          <div class="row-amount">${fmt(installment)}</div>
+        </div>`;
+    }
+
+    document.getElementById('results').classList.add('show');
+  }
+</script>
+
+</body>
+</html>
